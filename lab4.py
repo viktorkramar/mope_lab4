@@ -166,10 +166,10 @@ def positioning(position):
 
 fullDet = np.linalg.det(np.array(fullList))
 
-b0 = np.linalg.det(np.array(positioning(0))) / fullDet
-b1 = np.linalg.det(np.array(positioning(1))) / fullDet
-b2 = np.linalg.det(np.array(positioning(2))) / fullDet
-b3 = np.linalg.det(np.array(positioning(3))) / fullDet
+b_array = [np.linalg.det(np.array(positioning(0))) / fullDet,
+           np.linalg.det(np.array(positioning(1))) / fullDet,
+           np.linalg.det(np.array(positioning(2))) / fullDet,
+           np.linalg.det(np.array(positioning(3))) / fullDet]
 b12 = np.linalg.det(np.array(positioning(4))) / fullDet
 b13 = np.linalg.det(np.array(positioning(5))) / fullDet
 b23 = np.linalg.det(np.array(positioning(6))) / fullDet
@@ -208,33 +208,23 @@ beta1 = get_beta(1)
 beta2 = get_beta(2)
 beta3 = get_beta(3)
 
-t0 = abs(beta0) / Sbs
-t1 = abs(beta1) / Sbs
-t2 = abs(beta2) / Sbs
-t3 = abs(beta3) / Sbs
+t_array = [abs(beta0) / Sbs, abs(beta1) / Sbs, abs(beta2) / Sbs, abs(beta3) / Sbs]
 
 f3 = f1 * f2
 
 t_tab = scipy.stats.t.ppf((1 + (1 - q)) / 2, f3)
 print("t from table:", t_tab)
-if t0 < t_tab:
-    b0 = 0
-    print("t0:", t0, " t0<t_tab; b0=0")
-if t1 < t_tab:
-    b1 = 0
-    print("t1:", t1, " t1<t_tab; b1=0")
-if t2 < t_tab:
-    b2 = 0
-    print("t2:", t2, " t2<t_tab; b2=0")
-if t3 < t_tab:
-    b3 = 0
-    print("t3:", t3, " t3<t_tab; b3=0")
+
+for i in range(len(t_array)):
+    if t_array[i] < t_tab:
+        b_array[i] = 0
+        print("t" + str(i) + ":", t_array[i], " t" + str(i) + "<t_tab; b" + str(i) + "=0")
 
 y_hat = []
 for i in range(N):
     y_hat.append(
-        b0 + b1 * x_array[i][0] + b2 * x_array[i][1] + b3 * x_array[i][2] + b12 * x_array[i][0] *
-        x_array[i][1] +
+        b_array[0] + b_array[1] * x_array[i][0] + b_array[2] * x_array[i][1] + b_array[3] * x_array[i][2] +
+        b12 * x_array[i][0] * x_array[i][1] +
         b13 * x_array[i][0] * x_array[i][2] + b123 * x_array[i][0] * x_array[i][1] * x_array[i][2])
 """
     print ( f"y{i + 1}_hat = {b0:.2f}{b1:+.2f}*x{i + 1}1{b2:+.2f}*x{i + 1}2{b3:+.2f}*x{i + 1}3{b12:+.2f}*x{i + 1}1"
